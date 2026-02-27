@@ -3,717 +3,758 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="touch-action" content="manipulation">
-    <title>橙子文件专属客服</title>
+    <title>橙子文件购物中心</title>
     <style>
+        /* 全局基础样式，全手机兼容 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Microsoft YaHei', sans-serif;
-            -webkit-user-select: text;
-            user-select: text;
         }
-
-        body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            min-height: 100vh;
-            color: #fff;
-        }
-
-        /* 顶部滚动漂浮文字（完整保留） */
-        .scroll-notice {
+        /* 强制页面底色，一打开就有，绝对不会全黑 */
+        html, body {
             width: 100%;
-            background: rgba(255,125,0,0.15);
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,125,0,0.3);
+            min-height: 100vh;
+            background-color: #000000;
+            color: #ffffff;
+            font-family: system-ui, "Microsoft YaHei", sans-serif;
+            overflow-x: hidden;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            -webkit-appearance: none;
+        }
+
+        /* 登录页面：一打开就渲染，绝对能看到 */
+        .login-page {
+            width: 100%;
+            min-height: 100vh;
+            background-color: #000000;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-page.hide {
+            display: none;
+        }
+        .login-logo {
+            width: 100px;
+            height: 100px;
+            background-color: #ff7d00;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin-bottom: 30px;
+        }
+        .login-title {
+            font-size: 30px;
+            color: #ff7d00;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .login-desc {
+            font-size: 14px;
+            color: #cccccc;
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .login-input {
+            width: 100%;
+            max-width: 340px;
+            height: 52px;
+            background-color: #1a1a1a;
+            border: 1px solid #ff7d00;
+            border-radius: 12px;
+            padding: 0 16px;
+            color: #ffffff;
+            font-size: 15px;
+            margin-bottom: 16px;
+        }
+        .login-input::placeholder {
+            color: #999999;
+        }
+        .login-btn-group {
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .login-btn {
+            width: 100%;
+            height: 52px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+        .btn-main {
+            background-color: #ff7d00;
+            color: #ffffff;
+        }
+        .btn-second {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border: 1px solid #ff7d00;
+        }
+        .btn:active {
+            transform: scale(0.96);
+            transition: all 0.2s;
+        }
+
+        /* 主页面：登录后显示 */
+        .main-page {
+            width: 100%;
+            padding-bottom: 40px;
+            display: none;
+        }
+        .main-page.show {
+            display: block;
+        }
+        .header {
+            width: 100%;
+            height: 60px;
+            background-color: #000000;
+            border-bottom: 1px solid #ff7d00;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 999;
         }
-
-        .scroll-notice marquee {
+        .header-logo {
+            font-size: 18px;
+            font-weight: bold;
             color: #ff7d00;
+        }
+        .header-order {
+            padding: 8px 18px;
+            background-color: #ff7d00;
+            color: #ffffff;
+            border-radius: 20px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: bold;
         }
 
-        /* 全局通用样式 */
-        .main-btn {
-            padding: 12px 8px;
-            background: linear-gradient(90deg, #ff7d00, #ff5500);
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255,125,0,0.4);
-            transition: all 0.3s ease;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            min-height: 45px;
-            flex: 1;
-            min-width: 70px;
-        }
-
-        .main-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255,125,0,0.6);
-        }
-
-        .main-btn:active {
-            transform: translateY(0);
-        }
-
-        .highlight {
-            color: #ff7d00;
-            font-weight: 700;
-        }
-
-        @keyframes popup {
-            0% { opacity: 0; transform: translateY(-10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ========== 主页面样式 ========== */
-        .main-page {
-            width: 100%;
-            min-height: 100vh;
-            padding: 30px 15px;
-            display: block;
-            max-width: 650px;
-            margin: 0 auto;
-        }
-
-        /* 顶部标题栏 */
-        .header {
+        .top-title {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 10px 0;
+            padding: 25px 16px 20px;
         }
-
-        .main-title {
-            font-size: 30px;
-            font-weight: 800;
+        .top-title h1 {
+            font-size: 28px;
             color: #ff7d00;
-            text-shadow: 0 0 10px rgba(255,125,0,0.6);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .top-title p {
+            font-size: 13px;
+            color: #cccccc;
         }
 
-        .sub-title {
-            font-size: 14px;
-            color: #ffb74d;
-            opacity: 0.9;
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 16px;
+            margin-bottom: 25px;
         }
-
-        /* 核心功能按钮区 */
-        .core-btn-group {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 35px;
-            flex-wrap: wrap;
-        }
-
-        .ai-btn {
-            background: linear-gradient(90deg, #ffa726, #ff9500);
-        }
-
-        .group-btn {
-            background: linear-gradient(90deg, #ff9500, #ff7d00);
-        }
-
-        .service-btn {
-            background: linear-gradient(90deg, #ffb74d, #ffa726);
-        }
-
-        /* 关于我们&价格公示板块 */
-        .price-block {
-            background: rgba(45,45,45,0.8);
-            border: 1px solid rgba(255,125,0,0.3);
+        .grid-btn {
+            height: 55px;
             border-radius: 12px;
-            padding: 25px 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        .block-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #ff7d00;
-            margin-bottom: 20px;
+            font-size: 15px;
+            font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 8px;
-            border-left: 4px solid #ff7d00;
-            padding-left: 10px;
+            justify-content: center;
+        }
+        .grid-btn.full {
+            grid-column: 1 / -1;
         }
 
-        .block-content {
-            font-size: 15px;
-            line-height: 1.8;
-            color: #e0e0e0;
-        }
-
-        .block-content p {
-            margin-bottom: 12px;
-        }
-
-        /* 价格列表 */
-        .price-list {
+        .tags-group {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            padding: 0 16px;
+            margin-bottom: 30px;
+        }
+        .tag {
+            padding: 6px 14px;
+            background-color: rgba(255,125,0,0.15);
+            border: 1px solid #ff7d00;
+            border-radius: 16px;
+            color: #ff9500;
+            font-size: 12px;
+        }
+
+        .card {
+            margin: 0 16px 20px;
+            background-color: #111111;
+            border: 1px solid #ff7d00;
+            border-radius: 15px;
+            padding: 22px 18px;
+        }
+        .card-title {
+            font-size: 19px;
+            color: #ff7d00;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
 
         .price-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 14px 18px;
-            background: rgba(255,125,0,0.08);
-            border-radius: 8px;
-            border-left: 3px solid #ff7d00;
+            justify-content: space-between;
+            padding: 16px;
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            margin-bottom: 14px;
         }
-
-        .price-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: #fff;
+        .price-item:last-child {
+            margin-bottom: 0;
         }
-
+        .price-info h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+        .price-info p {
+            font-size: 12px;
+            color: #cccccc;
+        }
         .price-num {
-            font-size: 20px;
-            font-weight: 800;
+            font-size: 22px;
+            font-weight: bold;
             color: #ff7d00;
         }
 
-        /* 底部 */
+        .content-text {
+            font-size: 14px;
+            color: #dddddd;
+            line-height: 1.9;
+        }
+        .content-text p {
+            margin-bottom: 12px;
+        }
+        .content-text .highlight {
+            color: #ff7d00;
+            font-weight: bold;
+        }
+
         .footer {
             text-align: center;
+            padding: 20px 16px 30px;
+        }
+        .footer p {
             font-size: 12px;
-            color: #999;
+            color: #666666;
+            margin-bottom: 6px;
+        }
+        .footer a {
+            color: #ff7d00;
         }
 
-        .footer .highlight {
-            font-size: 13px;
-        }
-
-        /* ========== AI客服独立聊天页面（核心修复输入框显示） ========== */
-        .ai-chat-page {
+        /* 弹窗通用样式 */
+        .modal {
+            width: 100%;
+            height: 100vh;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100vh;
-            height: 100dvh; /* 适配手机端状态栏，避免高度溢出 */
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            z-index: 99999;
+            background-color: rgba(0,0,0,0.92);
             display: none;
-            flex-direction: column;
-            animation: popup 0.3s ease forwards;
-        }
-
-        .ai-chat-page.show {
-            display: flex;
-        }
-
-        /* 聊天页面顶部栏 */
-        .chat-header {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(90deg, #ff7d00, #ff5500);
-            display: flex;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            flex-shrink: 0; /* 固定不被压缩 */
+            justify-content: center;
+            padding: 0 20px;
+            z-index: 9999;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-box {
+            width: 100%;
+            max-width: 380px;
+            background-color: #111111;
+            border: 2px solid #ff7d00;
+            border-radius: 16px;
+            padding: 28px 22px;
+        }
+        .modal-title {
+            font-size: 21px;
+            color: #ff7d00;
+            text-align: center;
+            margin-bottom: 18px;
+            font-weight: bold;
+        }
+        .modal-text {
+            font-size: 14px;
+            color: #dddddd;
+            line-height: 1.9;
+            margin-bottom: 25px;
+        }
+        .modal-text .highlight {
+            color: #ff7d00;
+            font-weight: bold;
         }
 
-        .back-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: #fff;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
+        .notice-btn {
+            width: 100%;
+            height: 48px;
+            border-radius: 10px;
+            background-color: #ff7d00;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .notice-btn:disabled {
+            background-color: #333333;
+            color: #666666;
+            cursor: not-allowed;
+        }
+
+        .qrcode-box {
+            width: 200px;
+            height: 200px;
+            background-color: #ffffff;
+            border: 3px solid #ff7d00;
+            border-radius: 10px;
+            margin: 10px auto 16px;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #ff7d00;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .qrcode-tip {
+            font-size: 12px;
+            color: #ff7d00;
+            text-align: center;
+            margin-bottom: 22px;
+        }
+        .close-btn {
+            width: 100%;
+            height: 48px;
+            border-radius: 10px;
+            background-color: transparent;
+            border: 1px solid #ff7d00;
+            color: #ff7d00;
             font-size: 16px;
-            touch-action: manipulation;
+            font-weight: bold;
         }
 
-        .chat-page-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
+        .service-modal .modal-box {
+            max-width: 100%;
+            height: 90vh;
+            border-radius: 20px 20px 0 0;
+            align-self: flex-end;
+            display: flex;
+            flex-direction: column;
+        }
+        .service-header {
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333333;
+            margin-bottom: 15px;
         }
-
-        .chat-header-empty {
-            width: 35px;
+        .service-header h3 {
+            font-size: 18px;
+            color: #ff7d00;
         }
-
-        /* 聊天内容区域（核心修复：自适应高度，不挤压底部输入框） */
-        .chat-content {
+        .service-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #333333;
+            color: #ffffff;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .service-content {
             flex: 1;
-            padding: 15px;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            min-height: 0; /* 解决flex布局内容溢出挤压问题 */
+            padding-bottom: 15px;
         }
-
-        .chat-content::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .chat-content::-webkit-scrollbar-thumb {
-            background: #ff7d00;
-            border-radius: 2px;
-        }
-
-        .chat-msg {
+        .msg {
             max-width: 80%;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .msg-user {
-            align-self: flex-end;
-            align-items: flex-end;
-        }
-
-        .msg-ai {
-            align-self: flex-start;
-            align-items: flex-start;
-        }
-
-        .msg-tag {
-            font-size: 12px;
-            color: #999;
-            padding: 0 5px;
-        }
-
-        .msg-bubble {
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 10px;
             font-size: 14px;
-            line-height: 1.6;
-            word-break: break-all;
+            line-height: 1.5;
+            margin-bottom: 15px;
         }
-
-        .msg-user .msg-bubble {
-            background: linear-gradient(90deg, #ff7d00, #ff5500);
-            color: #fff;
-            border-bottom-right-radius: 2px;
+        .msg-ai {
+            background-color: #222222;
+            color: #ffffff;
+            margin-right: auto;
         }
-
-        .msg-ai .msg-bubble {
-            background: rgba(255,255,255,0.1);
-            color: #e0e0e0;
-            border: 1px solid rgba(255,125,0,0.2);
-            border-bottom-left-radius: 2px;
+        .msg-user {
+            background-color: #ff7d00;
+            color: #ffffff;
+            margin-left: auto;
         }
-
-        .msg-bubble a {
+        .service-transfer {
+            width: 100%;
+            height: 48px;
+            border-radius: 10px;
+            background-color: transparent;
+            border: 1px solid #ff7d00;
             color: #ff7d00;
-            font-weight: 700;
-            text-decoration: underline;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
         }
-
-        /* 横向滑动快捷提问区域（固定不被压缩） */
-        .quick-question-box {
-            padding: 12px 15px;
-            border-top: 1px solid rgba(255,125,0,0.2);
-            background: rgba(30,30,30,0.8);
-            flex-shrink: 0; /* 核心修复：绝对不被压缩隐藏 */
-        }
-
-        .quick-title {
-            font-size: 13px;
-            color: #ffb74d;
-            margin-bottom: 10px;
-            padding-left: 5px;
-        }
-
-        /* 横向滚动容器 */
-        .quick-btn-group {
+        .service-input-box {
             display: flex;
             gap: 10px;
-            overflow-x: auto;
-            flex-wrap: nowrap;
-            padding-bottom: 5px;
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #333333;
         }
-
-        .quick-btn-group::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* 快捷按钮样式 */
-        .quick-btn {
-            flex-shrink: 0;
-            padding: 8px 16px;
-            background: rgba(255,125,0,0.1);
-            border: 1px solid rgba(255,125,0,0.3);
-            border-radius: 20px;
-            color: #fff;
-            font-size: 13px;
-            cursor: pointer;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
-
-        .quick-btn:hover {
-            background: rgba(255,125,0,0.25);
-            transform: scale(0.98);
-        }
-
-        /* ========== 输入框区域（核心修复：100%显示，固定在底部） ========== */
-        .chat-input-box {
-            padding: 12px 15px;
-            background: rgba(40,40,40,0.8);
-            display: flex;
-            gap: 10px;
-            border-top: 1px solid rgba(255,125,0,0.2);
-            flex-shrink: 0; /* 核心修复：绝对不被压缩隐藏 */
-            min-height: 60px; /* 固定最小高度，保证手机端可见 */
-        }
-
-        .chat-input {
+        .service-input {
             flex: 1;
-            padding: 12px 18px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,125,0,0.3);
+            height: 45px;
+            background-color: #222222;
+            border: 1px solid #333333;
             border-radius: 25px;
-            color: #fff;
+            padding: 0 15px;
+            color: #ffffff;
             font-size: 14px;
-            outline: none;
-            min-width: 0;
-            max-height: 100px;
         }
-
-        .chat-input:focus {
-            border-color: #ff7d00;
-            background: rgba(255,255,255,0.15);
-        }
-
-        .chat-send-btn {
-            width: 65px;
-            flex-shrink: 0;
-            background: linear-gradient(90deg, #ff7d00, #ff5500);
-            border: none;
-            border-radius: 25px;
-            color: #fff;
-            font-weight: 700;
-            cursor: pointer;
+        .service-send {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #ff7d00;
+            color: #ffffff;
             font-size: 14px;
-            touch-action: manipulation;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <!-- 顶部滚动漂浮文字 -->
-    <div class="scroll-notice">
-        <marquee scrollamount="3" behavior="scroll">⚠️ 该内容无不良引导，仅供技术参考学习，若有侵权、违规或版权问题，请及时联系我</marquee>
+    <!-- 登录页面：一打开就渲染，绝对不会黑屏 -->
+    <div class="login-page" id="loginPage">
+        <div class="login-logo">🍊</div>
+        <h1 class="login-title">橙子文件购物中心</h1>
+        <p class="login-desc">入圈半年 | 全版本适配 | 稳定不翻车</p>
+        <input class="login-input" placeholder="请输入账号（随便输都能进）">
+        <input class="login-input" type="password" placeholder="请输入密码（随便输都能进）">
+        <div class="login-btn-group">
+            <button class="login-btn btn-main" id="loginBtn">立即进入</button>
+            <button class="login-btn btn-second" id="guestBtn">游客一键进入</button>
+        </div>
     </div>
 
-    <!-- 主页面 -->
+    <!-- 主页面：登录后显示 -->
     <div class="main-page" id="mainPage">
         <div class="header">
-            <h1 class="main-title">橙子文件专属客服</h1>
-            <p class="sub-title">入圈半年 | 全版本适配 | 稳定不翻车 | 24小时自动发货</p>
+            <div class="header-logo">🍊 橙子文件购物中心</div>
+            <a href="https://ulzbq.cn/shop/6A88F5VQ" target="_blank" class="header-order">一键下单</a>
         </div>
 
-        <!-- 核心功能按钮区 -->
-        <div class="core-btn-group">
-            <button class="main-btn" id="orderBtn">👉 一键下单</button>
-            <button class="main-btn ai-btn" id="aiBtn">🤖 AI客服</button>
-            <button class="main-btn group-btn" id="groupBtn">👥 一键加群</button>
-            <button class="main-btn service-btn" id="contactBtn">📞 转人工</button>
+        <div class="top-title">
+            <h1>橙子文件购物中心</h1>
+            <p>入圈半年 | 全版本适配 | 稳定不翻车 | 24小时自动发货</p>
         </div>
 
-        <!-- 关于我们&价格公示 -->
-        <div class="price-block">
-            <h2 class="block-title">📌 关于我们&价格公示</h2>
-            <div class="block-content">
-                <p>本人入和平精英文件圈已经半年，专注做稳定、好用的防风防检测文件，所有文件下单<span class="highlight">每次都有赠送</span>，赠送的样式/功能会有不同，还请大家见谅！</p>
-                <p>所有文件都是本人亲测调试，保证能用，价格也是全网最低的定制档，具体价格公示如下：</p>
-                
-                <div class="price-list">
-                    <div class="price-item">
-                        <div class="price-name">基础收费文件</div>
-                        <div class="price-num">¥ 8.88</div>
-                    </div>
-                    <div class="price-item">
-                        <div class="price-name">内部专属文件</div>
-                        <div class="price-num">¥ 12.9</div>
-                    </div>
-                    <div class="price-item">
-                        <div class="price-name">一对一私人定制文件</div>
-                        <div class="price-num">¥ 16.9</div>
-                    </div>
+        <div class="btn-grid">
+            <a href="https://ulzbq.cn/shop/6A88F5VQ" target="_blank" class="grid-btn btn-main">🍊 一键下单</a>
+            <button class="grid-btn btn-main" id="openRewardBtn">🍗 奖励作者鸡腿</button>
+            <button class="grid-btn btn-second" id="openServiceBtn">🤖 AI客服</button>
+            <a href="https://qm.qq.com/q/RnMzMCPFSY" target="_blank" class="grid-btn btn-second">👤 一键转人工</a>
+            <a href="https://qun.qq.com/universal-share/share?ac=1&authKey=9%2BN6EBYvVN9WZBU8WLwpNZkAz1ts3NLIy1fZ4DQ4FRvh8NCfuPk7JvaR2U0IaJBC&busi_data=eyJncm91cENvZGUiOiIxMDYwMjUwNzQ0IiwidG9rZW4iOiJNSVJqVWZSZEgvRTV5TE1xMmVRNXN1MVYrUkJRTC96dFBqT21xVUZYWFVhRWVmdDV4dll4cStQZFJpejRVRVRBIiwidWluIjoiMjY0MzQxMzI2NyJ9&data=M2KT58Tlqm8qNDhytAoQD5PVGkPRyD57RMIehFNfT5SmrbpSjZsMVLLPCNOf01X9iyl7FXVQL4Bg0D0hjInsyA&svctype=4&tempid=h5_group_info" target="_blank" class="grid-btn btn-main full">👥 一键加入官方交流群</a>
+        </div>
+
+        <div class="tags-group">
+            <div class="tag">亲测调试</div>
+            <div class="tag">稳定适配</div>
+            <div class="tag">全网低价</div>
+            <div class="tag">下单即赠</div>
+            <div class="tag">永久更新</div>
+            <div class="tag">一对一专属定制</div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">📦 文件价格公示</h2>
+            <div class="price-item">
+                <div class="price-info">
+                    <h3>基础通用文件</h3>
+                    <p>基础功能全适配 | 全版本可用</p>
                 </div>
-
-                <p>关于价格说明：今年的价格比往年略贵了一点，<span class="highlight">核心原因是现在和平精英版本更新太快，防检测机制越来越严，文件制作难度和维护成本都大幅提升了</span>，还请各位兄弟理解，保证给大家做最稳、最划算的文件！</p>
+                <div class="price-num">¥8.88</div>
+            </div>
+            <div class="price-item">
+                <div class="price-info">
+                    <h3>内部专属文件</h3>
+                    <p>内部专属优化 | 优先更新适配</p>
+                </div>
+                <div class="price-num">¥12.9</div>
+            </div>
+            <div class="price-item">
+                <div class="price-info">
+                    <h3>一对一私人定制文件</h3>
+                    <p>专属功能定制 | 一对一调试</p>
+                </div>
+                <div class="price-num">¥16.9</div>
             </div>
         </div>
 
-        <!-- 底部 -->
+        <div class="card">
+            <h2 class="card-title">📌 关于我们</h2>
+            <div class="content-text">
+                <p>本人深耕和平精英文件圈半年，专注打造稳定、好用的全新思路适配优化文件，所有文件下单<span class="highlight">每次都有专属赠送</span>，赠送样式与功能不定期更新，感谢各位兄弟包涵！</p>
+                <p>所有文件均为本人亲自实测调试，确保到手就能用，定价也是全网同类型最低定制档，拒绝高价割韭菜，只做最实在、最靠谱的文件。</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">⚠️ 侵权免责声明</h2>
+            <div class="content-text">
+                <p>1. 本网站仅作个人作品展示与导航服务，所有相关文件均为个人技术分享，仅供学习交流使用，严禁用于任何违规违法用途。</p>
+                <p>2. 本站所有内容均已标注来源，若本站内容存在侵犯您的著作权、商标权等合法权益的情况，请立即通过页面内的联系方式联系作者。</p>
+                <p>3. 联系作者：<a href="https://qm.qq.com/q/RnMzMCPFSY" target="_blank" class="highlight">点击跳转QQ</a></p>
+            </div>
+        </div>
+
         <div class="footer">
-            <p class="highlight">橙子文件工作室 | 入圈半年 | 专注稳定 | 持续更新</p>
-            <p style="margin-top: 5px;">本页面仅作客服解答使用，无任何违规功能</p>
+            <p>© 2024 橙子文件购物中心 版权所有</p>
+            <p>觉得好用，<a href="javascript:;" id="footerRewardBtn">点这里奖励作者一个鸡腿</a></p>
+            <p>本页面仅供学习交流使用，无任何违规功能</p>
         </div>
     </div>
 
-    <!-- AI客服聊天页面 -->
-    <div class="ai-chat-page" id="aiChatPage">
-        <!-- 顶部栏 -->
-        <div class="chat-header">
-            <button class="back-btn" id="backBtn">←</button>
-            <div class="chat-page-title">🤖 橙子AI智能客服</div>
-            <div class="chat-header-empty"></div>
+    <!-- 公告弹窗 -->
+    <div class="modal" id="noticeModal">
+        <div class="modal-box">
+            <h2 class="modal-title">📢 给各位兄弟的一段话</h2>
+            <div class="modal-text">
+                各位兄弟大家好！<br><br>
+                我一直坚持给大家做全网最低价的文件，下单就送超多福利，始终把最稳、最划算的体验带给大家。<br><br>
+                如果大家觉得我的文件好用、帮到了你，<span class="highlight">希望能给我赞助一点点鸡腿钱</span>，一块两块都是心意，多少都不嫌弃，非常感谢各位兄弟一直以来的支持！<br><br>
+                祝各位兄弟把把吃鸡，稳稳上分，新的一年一路长虹！
+            </div>
+            <button class="notice-btn" id="noticeCloseBtn" disabled>请等待5秒</button>
         </div>
+    </div>
 
-        <!-- 聊天内容区域 -->
-        <div class="chat-content" id="chatContent">
-            <div class="chat-msg msg-ai">
-                <div class="msg-tag">AI客服</div>
-                <div class="msg-bubble">
-                    你好！我是橙子文件专属AI客服，关于派克文件的所有问题都可以问我哦~<br>
-                    你可以左右滑动下方快捷按钮一键提问，也可以直接在底部输入框打字输入任何问题发送！
+    <!-- 收款码弹窗 -->
+    <div class="modal" id="rewardModal">
+        <div class="modal-box">
+            <h2 class="modal-title">🍗 感谢老板投喂鸡腿</h2>
+            <div class="modal-text">
+                一块两块都是心意，多少都不嫌弃，感谢各位兄弟的支持！<br>
+                祝老板把把吃鸡，稳稳上分，永不翻车！
+            </div>
+            <div class="qrcode-box">
+                <!-- 替换成你的收款码：<img src="./你的收款码.jpg" width="200" height="200"> -->
+                收款码位置
+            </div>
+            <p class="qrcode-tip">替换图片后，长按即可保存扫码</p>
+            <button class="close-btn" id="rewardCloseBtn">关闭</button>
+        </div>
+    </div>
+
+    <!-- AI客服弹窗 -->
+    <div class="modal service-modal" id="serviceModal">
+        <div class="modal-box">
+            <div class="service-header">
+                <h3>🤖 橙子AI客服</h3>
+                <button class="service-close" id="serviceCloseBtn">×</button>
+            </div>
+            <div class="service-content" id="serviceContent">
+                <div class="msg msg-ai">
+                    你好！我是橙子AI客服，有什么问题都可以问我~
                 </div>
             </div>
-        </div>
-
-        <!-- 横向滑动快捷提问 -->
-        <div class="quick-question-box">
-            <div class="quick-title">热门问题 左右滑动👇</div>
-            <div class="quick-btn-group">
-                <button class="quick-btn" data-question="文件稳不稳定？">文件稳不稳定？</button>
-                <button class="quick-btn" data-question="文件怎么用？">文件怎么用？</button>
-                <button class="quick-btn" data-question="怎么下单？">怎么下单？</button>
-                <button class="quick-btn" data-question="密码错误怎么办？">密码错误怎么办？</button>
-                <button class="quick-btn" data-question="打不开文件怎么办？">打不开文件怎么办？</button>
-                <button class="quick-btn" data-question="有没有免费更新？">有没有免费更新？</button>
-                <button class="quick-btn" data-question="下单有赠送吗？">下单有赠送吗？</button>
-                <button class="quick-btn" data-question="怎么加官方群？">怎么加官方群？</button>
-                <button class="quick-btn" data-question="怎么联系人工？">怎么联系人工？</button>
+            <a href="https://qm.qq.com/q/RnMzMCPFSY" target="_blank" class="service-transfer">👉 一键转人工客服</a>
+            <div class="service-input-box">
+                <input class="service-input" id="serviceInput" placeholder="请输入您的问题...">
+                <button class="service-send" id="sendBtn">发送</button>
             </div>
-        </div>
-
-        <!-- 输入框区域（100%修复，永久显示） -->
-        <div class="chat-input-box">
-            <input type="text" class="chat-input" id="chatInput" placeholder="请输入你要问的问题，点击发送按钮即可...">
-            <button class="chat-send-btn" id="sendBtn">发送</button>
         </div>
     </div>
 
-    <script>
-        // ===================== 链接已全部配置完成，无需修改 =====================
-        const ORDER_LINK = "https://ulzbq.cn/shop/6A88F5VQ"; // 一键下单链接
-        const GROUP_LINK = "http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=6qq5zFMsDr3VJNPYBPv3FLylbhxGZ-cx&authKey=HWRdBYKXfnoL4aJjN7Lb3mYP5IAP%2FcwNiGstOm9sUbjUSBsZ%2BL0f8ENVv6THwaP7&noverify=0&group_code=1060250744"; // 一键加群链接
-        const CONTACT_LINK = "https://qm.qq.com/q/JGdS5OdBiS"; // 转人工QQ加好友链接
-        // =========================================================================
+    <!-- 【背景音乐1：登录后播放】 -->
+    <audio id="bgMusic" loop preload="none" src="./bg-music.mp3">
+    <!-- 【背景音乐2：赞助弹窗专属音乐】 -->
+    <audio id="rewardMusic" loop preload="none" src="./reward-music.mp3">
 
-        // AI客服全内容回复库
-        const aiReplyList = [
+    <!-- JS全部放在页面最底部！确保DOM完全加载完再执行，绝对不会报错黑屏 -->
+    <script>
+        // 页面元素获取（DOM已经加载完，绝对能获取到）
+        var loginPage = document.getElementById('loginPage');
+        var mainPage = document.getElementById('mainPage');
+        var loginBtn = document.getElementById('loginBtn');
+        var guestBtn = document.getElementById('guestBtn');
+        var bgMusic = document.getElementById('bgMusic');
+        var rewardMusic = document.getElementById('rewardMusic'); // 新增赞助音乐
+
+        var noticeModal = document.getElementById('noticeModal');
+        var noticeCloseBtn = document.getElementById('noticeCloseBtn');
+
+        var rewardModal = document.getElementById('rewardModal');
+        var openRewardBtn = document.getElementById('openRewardBtn');
+        var footerRewardBtn = document.getElementById('footerRewardBtn');
+        var rewardCloseBtn = document.getElementById('rewardCloseBtn');
+
+        var serviceModal = document.getElementById('serviceModal');
+        var openServiceBtn = document.getElementById('openServiceBtn');
+        var serviceCloseBtn = document.getElementById('serviceCloseBtn');
+        var sendBtn = document.getElementById('sendBtn');
+        var serviceInput = document.getElementById('serviceInput');
+        var serviceContent = document.getElementById('serviceContent');
+
+        // 登录成功处理
+        function loginSuccess() {
+            loginPage.className = 'login-page hide';
+            mainPage.className = 'main-page show';
+            // 播放背景音乐（容错处理，不会报错）
+            try {
+                bgMusic.play();
+            } catch (e) {}
+            // 显示公告弹窗
+            noticeModal.className = 'modal show';
+            // 5秒倒计时
+            var countdown = 5;
+            var timer = setInterval(function() {
+                countdown--;
+                noticeCloseBtn.innerText = '请等待' + countdown + '秒';
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    noticeCloseBtn.innerText = '我知道了';
+                    noticeCloseBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // 登录按钮点击
+        loginBtn.onclick = loginSuccess;
+        guestBtn.onclick = loginSuccess;
+
+        // 公告关闭
+        noticeCloseBtn.onclick = function() {
+            noticeModal.className = 'modal';
+        };
+
+        // 收款码弹窗控制（新增音乐切换逻辑）
+        function openReward() {
+            // 暂停原来的背景音乐
+            try { bgMusic.pause(); } catch (e) {}
+            // 播放赞助专属音乐
+            try { rewardMusic.currentTime = 0; rewardMusic.play(); } catch (e) {}
+            // 显示弹窗
+            rewardModal.className = 'modal show';
+        }
+        function closeReward() {
+            // 暂停赞助音乐
+            try { rewardMusic.pause(); } catch (e) {}
+            // 恢复原来的背景音乐
+            try { bgMusic.play(); } catch (e) {}
+            // 关闭弹窗
+            rewardModal.className = 'modal';
+        }
+
+        openRewardBtn.onclick = openReward;
+        footerRewardBtn.onclick = openReward;
+        rewardCloseBtn.onclick = closeReward;
+        rewardModal.onclick = function(e) {
+            if (e.target === rewardModal) closeReward();
+        };
+
+        // AI客服弹窗控制
+        openServiceBtn.onclick = function() {
+            serviceModal.className = 'modal service-modal show';
+            serviceInput.focus();
+        };
+        serviceCloseBtn.onclick = function() {
+            serviceModal.className = 'modal service-modal';
+        };
+        serviceModal.onclick = function(e) {
+            if (e.target === serviceModal) serviceModal.className = 'modal service-modal';
+        };
+
+        // AI客服自动回复
+        var replyList = [
             {
-                keywords: ["稳不稳定", "稳吗", "会不会翻车", "掉不掉", "稳不稳", "会不会封号", "安全吗", "防封吗"],
-                reply: "本系列所有派克文件、mini派克文件均经过多轮真机实测，稳定运行，肯定稳定！适配当前和平精英全版本，只要按教程操作，放心使用！"
+                keywords: ["价格", "多少钱", "怎么卖"],
+                reply: "我们一共3个档位：基础通用8.88元、内部专属12.9元、一对一私人定制16.9元，下单就有额外赠送~"
             },
             {
-                keywords: ["价格", "多少钱", "收费", "价位", "怎么卖", "价格多少", "多少钱一个", "贵不贵", "涨价了吗"],
-                reply: "咱们家文件全网最低定制档，价格公示：\n1. 基础收费文件：8.88元\n2. 内部专属文件：12.9元\n3. 一对一私人定制文件：16.9元\n今年价格略涨是因为和平精英版本更新快，防检测机制更严，文件制作难度和维护成本大幅提升，还请兄弟理解！"
+                keywords: ["稳不稳", "会不会翻车", "封号"],
+                reply: "所有文件都经过真机实测，全版本适配，稳定不翻车，按教程操作即可放心使用~"
             },
             {
-                keywords: ["教程", "怎么用", "使用方法", "怎么打开", "操作步骤", "使用教程", "派克文件怎么用", "mini派克怎么用", "迷你派克怎么用", "文件使用步骤"],
-                reply: "【完整版派克文件 使用步骤】\n1. 下单后，在订单页面获取文件下载链接+提取码，把文件完整下载到手机/电脑本地，禁止直接在网盘内打开。\n2. 解压文件压缩包，解压密码随订单一同发送，复制粘贴输入，避免手动输错大小写和空格。\n3. 手机端：用系统自带浏览器、Chrome、Edge打开HTML文件，不要用微信/QQ内置浏览器；电脑端：直接用Chrome/Edge浏览器双击打开即可。\n4. 打开文件后，输入订单内标注的默认验证密码，完成验证进入主界面。\n5. 按界面步骤依次操作：环境检测→模块注入→防护配置→激活生效，每一步完成后自动跳转下一步。\n6. 激活成功后，保持页面后台运行，手动切小窗打开游戏即可，无需关闭浏览器。\n\n【mini派克文件 使用步骤】\n1. 下载mini版文件到本地，无需解压，直接用浏览器打开HTML文件即可，操作更轻量化。\n2. 输入默认密码6688完成验证，一键点击「启动防风」即可完成配置。\n3. 保持页面后台运行，切小窗打开游戏即可，占用内存更小，适配低配手机。\n\n⚠️ 通用温馨提示：\n1. 页面点击无反应，优先更换浏览器，禁止用微信/QQ内置浏览器打开；\n2. 所有文件仅支持对应版本游戏，不要跨版本使用；\n3. 建议开启全部防护功能，进一步提升稳定性。"
+                keywords: ["怎么用", "教程", "打不开"],
+                reply: "下单后下载文件到本地，用手机自带浏览器打开HTML文件，不要用微信/QQ内置浏览器，按页面提示操作即可~"
             },
             {
-                keywords: ["下单", "怎么买", "在哪买", "购买", "怎么下单", "在哪下单", "怎么购买", "下单链接", "购买链接", "下单步骤", "购买流程"],
-                reply: "全程自助下单，24小时自动发货，付款后秒发提取码+使用教程+赠送内容，步骤如下：\n1. 点击页面顶部的「一键下单」按钮，跳转至官方店铺页面。\n2. 选择你需要的文件版本（基础/内部/定制），确认对应功能，点击「立即购买」。\n3. 确认订单信息，完成付款，付款后不要关闭页面，等待自动跳转至订单详情页。\n4. 订单详情页内包含：文件下载链接、提取码、解压密码、验证密码、使用教程、赠送内容。\n5. 订单信息会同步发送到你下单填写的手机号/邮箱，永久可查，丢失可随时找回。\n\n📌 下单须知：\n1. 虚拟商品，下单后自动发货，非文件本身无法使用问题不支持退换，下单前请确认需求；\n2. 禁止二次售卖、传播文件，违者永久拉黑，不提供后续更新和售后；\n3. 下单后遇到任何问题，可直接联系人工客服处理。"
-            },
-            {
-                keywords: ["赠送", "有没有送", "送什么", "赠品", "下单有赠送吗", "送什么东西", "有福利吗"],
-                reply: "本人入圈半年，所有文件下单每次都有赠送！赠送的样式和功能会有不同，都是实用的配套内容，还请大家见谅~"
-            },
-            {
-                keywords: ["定制", "定制文件", "私人定制", "定做", "可以定制吗", "定制多少钱"],
-                reply: "一对一私人定制文件仅需16.9元！可以按你的需求定制功能、界面样式、专属密码，一对一适配你的设备和游戏版本，需要的话直接联系人工客服哦~"
-            },
-            {
-                keywords: ["更新", "免费更新", "会更新吗", "更新吗", "包更新吗", "版本更新", "游戏更新了怎么办"],
-                reply: "所有文件都会随和平精英版本同步更新，修复适配问题；下单后对应版本永久免费更新，游戏大版本更新后，直接联系人工客服就能获取最新版文件！"
-            },
-            {
-                keywords: ["密码错误", "密码不对", "解压密码", "验证密码", "密码输错了", "密码不对怎么办", "密码忘了", "密码是多少", "默认密码", "初始密码", "密码6688"],
-                reply: "1. mini派克文件的默认验证密码是6688；完整版派克文件的解压密码、验证密码都在订单详情页里，建议复制粘贴输入，不要手动输入，避免大小写和空格错误；\n2. 若连续输错锁定，关闭页面重新打开即可重置次数；\n3. 若密码失效，直接联系人工客服补发最新密码。"
-            },
-            {
-                keywords: ["打不开", "白屏", "点击没反应", "用不了", "打不开文件", "没反应", "闪退", "进不去", "页面无响应"],
-                reply: "打不开/没反应优先排查这几点：\n1. 不要用微信/QQ内置浏览器打开，换系统自带浏览器、Chrome、Edge；\n2. 不要在网盘里直接打开，必须下载到本地再打开；\n3. 关闭浏览器的广告拦截和无痕模式，部分拦截插件会屏蔽页面功能；\n4. 确认文件已完整下载，没有损坏，重新下载解压后再尝试。"
-            },
-            {
-                keywords: ["悬浮窗", "小窗", "没有悬浮小窗", "悬浮小窗功能", "怎么开小窗", "小窗模式"],
-                reply: "由于开发时间有限，本系列文件暂未开发内置悬浮小窗功能，你手动将浏览器切换为小窗模式，使用效果和悬浮小窗完全一致，不影响文件的所有功能正常运行哦。"
-            },
-            {
-                keywords: ["人工客服", "转人工", "找人工", "人工", "怎么联系人工", "客服联系方式", "怎么找你", "联系我", "版权问题", "侵权", "违规"],
-                reply: "你可以直接点击这里跳转人工客服，加我QQ好友哦~ 👉 <a href=\""+CONTACT_LINK+"\" target=\"_blank\">一键跳转人工客服</a>"
-            },
-            {
-                keywords: ["数据安全", "安全吗", "会不会泄露数据", "数据保护", "会不会盗号", "账号安全"],
-                reply: "本文件无内置数据保护功能，所有配置均在本地运行，无数据上传，不会获取你的任何账号信息，可放心使用。如需保障数据传输安全，请自行配置独立端口，避免数据泄露。"
-            },
-            {
-                keywords: ["加群", "官方群", "交流群", "群聊", "怎么加群", "进群", "怎么加官方群", "群号是多少"],
-                reply: "点击这里就能一键加入我们的【橙子官方文件交流群】啦~ 👉 <a href=\""+GROUP_LINK+"\" target=\"_blank\">一键加入官方群</a>\n进群可获取最新文件更新通知、免费福利、一对一问题解答，了解更多独家内容！"
-            },
-            {
-                keywords: ["你好", "在吗", "哈喽", "嗨", "有人吗", "在不在"],
-                reply: "你好呀！我是橙子文件专属AI客服，有什么关于派克文件的问题，都可以问我哦~ 你可以左右滑动下方快捷按钮一键提问，也可以直接在底部输入框打字输入任何问题发送！"
-            },
-            {
-                keywords: ["入圈多久", "做了多久", "入圈半年", "你做这个多久了"],
-                reply: "本人入和平精英文件圈已经半年啦，专注做稳定、好用的防风防检测文件，所有文件都是亲测调试，保证能用，放心下单！"
-            },
-            {
-                keywords: ["支持什么版本", "适配什么版本", "版本适配", "支持什么手机", "适配机型"],
-                reply: "本系列所有文件适配当前和平精英全版本，安卓手机全机型适配，电脑端也可正常使用，低配手机推荐使用mini派克轻量化版本，运行更流畅。"
-            },
-            {
-                keywords: ["免责", "免责声明", "不良行为", "参考学习"],
-                reply: "本内容无不良引导，仅供技术参考学习，若有侵权、违规或版权问题，请及时联系我，也可以直接点击这里跳转人工客服 👉 <a href=\""+CONTACT_LINK+"\" target=\"_blank\">一键联系我</a>"
-            },
-            {
-                keywords: ["下单须知", "注意事项", "要注意什么", "有什么要求", "禁止什么"],
-                reply: "下单须知&注意事项：\n1. 虚拟商品，下单后自动发货，非文件本身无法使用问题不支持退换，下单前请确认需求；\n2. 禁止二次售卖、传播文件，违者永久拉黑，不提供后续更新和售后；\n3. 禁止用微信/QQ内置浏览器打开文件，会导致功能异常；\n4. 下单后遇到任何问题，可直接联系人工客服处理。"
+                keywords: ["加群", "群号", "交流群"],
+                reply: "官方交流群号：1060250744，点击页面上的「一键加入官方交流群」按钮即可直接跳转加群~"
             }
         ];
 
-        // 兜底回复
-        function getDefaultReply() {
-            return "这个问题我暂时无法解答，你可以点击下方链接直接联系人工客服，加我QQ好友咨询哦~ 👉 <a href=\""+CONTACT_LINK+"\" target=\"_blank\">一键跳转人工客服</a>";
-        }
-
-        // ========== 页面切换功能 ==========
-        // 打开AI客服页面
-        document.getElementById('aiBtn').addEventListener('click', () => {
-            document.getElementById('mainPage').style.display = 'none';
-            document.getElementById('aiChatPage').classList.add('show');
-            setTimeout(() => {
-                const chatContent = document.getElementById('chatContent');
-                chatContent.scrollTop = chatContent.scrollHeight;
-            }, 100);
-        });
-
-        // 返回主页面
-        document.getElementById('backBtn').addEventListener('click', () => {
-            document.getElementById('aiChatPage').classList.remove('show');
-            document.getElementById('mainPage').style.display = 'block';
-        });
-
-        // ========== 核心按钮功能 ==========
-        // 一键下单按钮
-        document.getElementById('orderBtn').addEventListener('click', () => {
-            window.open(ORDER_LINK, '_blank');
-        });
-
-        // 一键加群按钮
-        document.getElementById('groupBtn').addEventListener('click', () => {
-            window.open(GROUP_LINK, '_blank');
-        });
-
-        // 转人工客服按钮
-        document.getElementById('contactBtn').addEventListener('click', () => {
-            window.open(CONTACT_LINK, '_blank');
-        });
-
-        // ========== AI聊天核心功能 ==========
-        // 发送消息函数
-        function sendMsg(content) {
-            const chatInput = document.getElementById('chatInput');
-            const chatContent = document.getElementById('chatContent');
-            
-            const msgContent = content || chatInput.value.trim();
-            if (!msgContent) return;
+        // 发送消息
+        function sendMsg() {
+            var content = serviceInput.value.trim();
+            if (!content) return;
 
             // 添加用户消息
-            chatContent.innerHTML += `
-                <div class="chat-msg msg-user">
-                    <div class="msg-tag">我</div>
-                    <div class="msg-bubble">${msgContent}</div>
-                </div>
-            `;
-            chatInput.value = '';
-            chatContent.scrollTop = chatContent.scrollHeight;
+            var userMsg = document.createElement('div');
+            userMsg.className = 'msg msg-user';
+            userMsg.innerText = content;
+            serviceContent.appendChild(userMsg);
+            serviceInput.value = '';
 
-            // 匹配AI回复
-            setTimeout(() => {
-                let reply = getDefaultReply();
-                for (let item of aiReplyList) {
-                    for (let keyword of item.keywords) {
-                        if (msgContent.indexOf(keyword) !== -1) {
-                            reply = item.reply;
-                            break;
-                        }
+            // 匹配回复
+            var reply = "这个问题暂时无法解答，您可以点击「一键转人工」联系我~";
+            for (var i = 0; i < replyList.length; i++) {
+                var item = replyList[i];
+                for (var j = 0; j < item.keywords.length; j++) {
+                    if (content.indexOf(item.keywords[j]) !== -1) {
+                        reply = item.reply;
+                        break;
                     }
-                    if (reply !== getDefaultReply()) break;
                 }
+                if (reply !== "这个问题暂时无法解答，您可以点击「一键转人工」联系我~") break;
+            }
 
-                // 添加AI回复
-                chatContent.innerHTML += `
-                    <div class="chat-msg msg-ai">
-                        <div class="msg-tag">AI客服</div>
-                        <div class="msg-bubble">${reply.replace(/\n/g, '<br>')}</div>
-                    </div>
-                `;
-                chatContent.scrollTop = chatContent.scrollHeight;
+            // 延迟回复
+            setTimeout(function() {
+                var aiMsg = document.createElement('div');
+                aiMsg.className = 'msg msg-ai';
+                aiMsg.innerText = reply;
+                serviceContent.appendChild(aiMsg);
+                serviceContent.scrollTop = serviceContent.scrollHeight;
             }, 600);
+
+            serviceContent.scrollTop = serviceContent.scrollHeight;
         }
 
-        // 发送按钮点击
-        document.getElementById('sendBtn').addEventListener('click', () => sendMsg());
-
-        // 回车发送
-        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+        sendBtn.onclick = sendMsg;
+        serviceInput.onkeydown = function(e) {
             if (e.key === 'Enter') sendMsg();
-        });
-
-        // 快捷问题按钮点击
-        document.querySelectorAll('.quick-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const question = btn.dataset.question;
-                sendMsg(question);
-            });
-        });
-
-        // ========== 手机端触摸适配 ==========
-        ['orderBtn','aiBtn','groupBtn','contactBtn','sendBtn','backBtn'].forEach(id => {
-            const el = document.getElementById(id);
-            el && el.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                el.click();
-            });
-        });
-        document.querySelectorAll('.quick-btn').forEach(btn => {
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                btn.click();
-            });
-        });
+        };
     </script>
 </body>
 </html>
